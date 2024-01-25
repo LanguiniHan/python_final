@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% include "include/head.html" %}
+</head>
+<body>
+<div class="container-fluid bg-trasparent my-5 p-3" style="position: relative" id="app">
+    {% include "include/navbar.html" %}
+    <div class="form-group my-5">
+        <input type="text" class="form-control" id="search" placeholder="Example input placeholder"
+               placeholder="Name..." v-model="txtSearch" @keyup="searchTimeout()">
+    </div>
+    <div class="row row-cols-1 row-cols-xs-2 row-cols-sm-2 row-cols-lg-4 g-3">
+
+    </div>
+</div>
+
+<script type="text/javascript">
+    var vue_det = new Vue({
+        el: '#app',
+        delimiters: ['[[', ']]'],
+        data: {
+            timeout: 500,
+            message: 'hello',
+            products: [],
+            categories: [],
+            cache: {},
+            txtSearch: '',
+            url: 'http://localhost:5000'
+
+
+        },
+        methods: {
+            onSearch() {
+                axios.get(`${this.url}/api/products?search=${this.txtSearch}`).then((res) => {
+                    this.products = res.data
+                })
+            },
+            searchTimeout() {
+                let timeout = null;
+                clearTimeout(timeout);
+                timeout = setTimeout(() => {
+                    this.onSearch();
+                }, this.timeout);
+            },
+            categoryFilter(id){
+                axios.get(`${this.url}/api/products?category=${id}`).then((res) => {
+                    this.products = res.data
+                })
+            }
+        },
+        created() {
+
+
+        },
+        mounted() {
+            axios.get(`${this.url}/api/products`).then((res) => {
+                this.products = res.data
+            })
+            axios.get(`${this.url}/api/category`).then((res) => {
+                this.categories = res.data
+            })
+        },
+    });
+</script>
+</body>
+</html>
